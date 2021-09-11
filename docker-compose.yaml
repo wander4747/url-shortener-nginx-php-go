@@ -1,0 +1,38 @@
+version: '3'
+
+services: 
+  app-go:
+    build: ./build/go
+    volumes:
+      - ./api:/go/src
+    ports:
+      - 1234:1234
+    networks: 
+      - network-url
+
+  app-php:
+    image: php:8.0.10-fpm
+    volumes:
+      - ./app:/usr/share/nginx/html
+    networks: 
+      - network-url
+
+  app-nginx:
+    image: nginx:stable
+    ports:
+      - "8521:80"
+      - "9999:8001"
+      - "9998:8002"
+      - "2222:8003"
+    volumes:
+      - ./app:/usr/share/nginx/html
+      - ./nginx/conf:/etc/nginx/conf.d/
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    networks: 
+      - network-url
+    links: 
+      - "app-php"
+
+
+networks:
+  network-url:
