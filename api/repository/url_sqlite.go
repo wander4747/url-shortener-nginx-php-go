@@ -38,9 +38,7 @@ func (u URLRepositoryDBSqlite) Save(urlData entity.URL) (entity.URL, error) {
 	url := entity.NewUrl(7)
 	url.Link = urlData.Link
 
-	sql := `
-		INSERT INTO urls (link, hash) values(?, ?)
-	`
+	sql := `INSERT INTO urls (link, hash) values(?, ?)`
 
 	prepare, err := u.db.Prepare(sql)
 	if err != nil {

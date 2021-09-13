@@ -22,8 +22,8 @@ func (urlService URLService) Find(hash string) (entity.URL, error) {
 	return url, nil
 }
 
-func (u URLService) Save(data entity.URL) (entity.URL, error) {
-	url, err := u.Repository.Save(data)
+func (urlService URLService) Save(data entity.URL) (entity.URL, error) {
+	url, err := urlService.Repository.Save(data)
 	if err != nil {
 		return entity.URL{}, err
 	}
