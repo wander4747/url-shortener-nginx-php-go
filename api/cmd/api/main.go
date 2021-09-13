@@ -1,12 +1,13 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"log"
 	"url_shortener/cmd/api/handler"
 	"url_shortener/infrastructure/database"
 	"url_shortener/repository"
 	"url_shortener/service"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -28,7 +29,7 @@ func main() {
 			"message": "welcome guri",
 		})
 	})
-	r.GET("/:hash", urlHandler.Find)
+	r.GET("/:hash", urlHandler.Redirect)
 	r.POST("/", urlHandler.Save)
 	r.Run(":1234")
 }
