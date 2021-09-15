@@ -14,6 +14,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const URL = "http://www.google.com.br"
+
 func TestNewUrlDBSqlite(t *testing.T) {
 	db, _, _ := sqlmock.New()
 	repositoryMock := repository.NewUrlDBSqlite(db)
@@ -59,11 +61,11 @@ func TestURLRepositoryDBSqlite_Find(t *testing.T) {
 			name: "Success",
 			i:    repositoryMock,
 			mock: func() {
-				rows := sqlmock.NewRows([]string{"id", "link", "hash"}).AddRow(1, "http://www.google.com", "1234abc")
+				rows := sqlmock.NewRows([]string{"id", "link", "hash"}).AddRow(1, URL, "1234abc")
 				mock.ExpectQuery(regexp.QuoteMeta(sql)).WithArgs("1234abc").WillReturnRows(rows)
 			},
 			hash:    "1234abc",
-			want:    entity.URL{ID: 1, Link: "http://www.google.com", Hash: "1234abc"},
+			want:    entity.URL{ID: 1, Link: URL, Hash: "1234abc"},
 			err:     nil,
 			wantErr: false,
 		},
@@ -126,30 +128,30 @@ func TestURLRepositoryDBSqlite_Save(t *testing.T) {
 			name: "Success",
 			i:    repositoryMock,
 			mock: func() {
-				mock.ExpectPrepare(sql).ExpectExec().WithArgs("http://www.google.com.br", "it65dBfr").WillReturnResult(sqlmock.NewResult(1, 1))
+				mock.ExpectPrepare(sql).ExpectExec().WithArgs(URL, "it65dBfr").WillReturnResult(sqlmock.NewResult(1, 1))
 			},
-			data:    entity.URL{ID: 1, Link: "http://www.google.com.br", Hash: "it65dBfr"},
-			want:    entity.URL{ID: 1, Link: "http://www.google.com.br", Hash: "it65dBfr"},
+			data:    entity.URL{ID: 1, Link: URL, Hash: "it65dBfr"},
+			want:    entity.URL{ID: 1, Link: URL, Hash: "it65dBfr"},
 			wantErr: false,
 		},
 		{
 			name: "Empty link",
 			i:    repositoryMock,
 			mock: func() {
-				mock.ExpectPrepare(sql).ExpectExec().WithArgs("http://www.google.com.br", "it65dBfr").WillReturnError(errors.New("empty link"))
+				mock.ExpectPrepare(sql).ExpectExec().WithArgs(URL, "it65dBfr").WillReturnError(errors.New("empty link"))
 			},
 			data:    entity.URL{ID: 1, Link: "", Hash: "it65dBfr"},
-			want:    entity.URL{ID: 1, Link: "http://www.google.com.br", Hash: "it65dBfr"},
+			want:    entity.URL{ID: 1, Link: URL, Hash: "it65dBfr"},
 			wantErr: true,
 		},
 		{
 			name: "Invalid SQL query",
 			i:    repositoryMock,
 			mock: func() {
-				mock.ExpectPrepare("INSERT INTO wrong_table").ExpectExec().WithArgs("http://www.google.com.br", "it65dBfr").WillReturnError(errors.New("invalid sql query"))
+				mock.ExpectPrepare("INSERT INTO wrong_table").ExpectExec().WithArgs(URL, "it65dBfr").WillReturnError(errors.New("invalid sql query"))
 			},
 			data:    entity.URL{ID: 1, Link: "", Hash: "it65dBfr"},
-			want:    entity.URL{ID: 1, Link: "http://www.google.com.br", Hash: "it65dBfr"},
+			want:    entity.URL{ID: 1, Link: URL, Hash: "it65dBfr"},
 			wantErr: true,
 		},
 	}
@@ -165,18 +167,6 @@ func TestURLRepositoryDBSqlite_Save(t *testing.T) {
 			} else {
 				assert.Error(t, err)
 			}
-
-			//u := URLRepositoryDBSqlite{
-			//	db: tt.fields.db,
-			//}
-			//got, err := tt.i.Save(tt.data)
-			//if (err != nil) != tt.wantErr {
-			//	t.Errorf("Save() error = %v, wantErr %v", err, tt.wantErr)
-			//	return
-			//}
-			//if !reflect.DeepEqual(got, tt.want) {
-			//	t.Errorf("Save() got = %v, want %v", got, tt.want)
-			//}
 		})
 	}
 }
